@@ -2,7 +2,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-satellites = np.array([])
+satellites = []
 
 class Object():
     def __init__(self, position, x_velocity, y_velocity, hasGravity, mass, satellites):
@@ -12,7 +12,10 @@ class Object():
         self.hasGravity = hasGravity
         self.mass = mass
 
-        self.acceleration = updateAcceleration(satellites)
+        self.acceleration = self.updateAcceleration(satellites)
+
+        for satellite in satellites:
+            satellite.updateAcceleration(satellites)
 
     def updateAcceleration(self, satellites):
         xres = 0
@@ -20,12 +23,12 @@ class Object():
         for satellite in satellites:
             
             if satellite.hasGravity:
-                separation = math.sqrt((position[0]-satellite.pos[0])**2+
-                                      (position[1]-satellite.pos[1])**2)
+                separation = math.sqrt((self.pos[0]-satellite.pos[0])**2+
+                                      (self.pos[1]-satellite.pos[1])**2)
 
                 g = 6.67e-11*satellite.mass/separation**2
 
-                direction = [satellite.pos[0]-position[0],satellite.pos[1]-position[1]]
+                direction = [satellite.pos[0]-self.pos[0],satellite.pos[1]-self.pos[1]]
                 T = math.sqrt(sum([x**2 for x in direction]))
                 normalised = [x/T for x in direction]
 
@@ -34,9 +37,13 @@ class Object():
 
         self.acceleration = [xres, yres]
 
+satellites.append(Object([6371e3,0], 0, 0, True, 1, satellites))
+satellites.append(Object([0,0], 0, 0, True, 5.97e24, satellites))
+satellites.append(Object([2e2,-2e2], 0, 0, True, 8e10, satellites))
+
 xdata = [satellite.pos[0] for satellite in satellites]
 ydata = [satellite.pos[1] for satellite in satellites]
 
-plot, = plt.plot([], [])
-plt.set_xdata
-plt.draw()
+plot = plt.scatter(xdata, ydata)
+plt.show()
+
